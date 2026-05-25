@@ -17,7 +17,7 @@ enum PrefixOperator {
 }
 
 impl PrefixOperator {
-    fn build(&self, operand: Expression) -> Expression {
+    // fn build(&self, operand: Expression) -> Expression {
         
-    }
+    // }
 }

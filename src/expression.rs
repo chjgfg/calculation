@@ -1,6 +1,6 @@
 use std::f64;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Constant {
     /// 自然常数，数学符号 e，值约等于 2.71828e
     E,
@@ -23,7 +23,7 @@ impl From<&Constant> for f64 {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Expression {
     /// 常量
     Constant(Constant),
@@ -171,6 +171,18 @@ mod tests {
     // 包装一下
     fn box_expression(expression: Expression) -> Box<Expression> {
         Box::new(expression)
+    }
+
+    #[test]
+    fn test_from() {
+        let e: Expression = Constant::E.into();
+        assert_eq!(e, Expression::Constant(Constant::E));
+        let n: Expression = 6.0.into();
+        assert_eq!(n, Expression::Number(6.0));
+        let bn: Box<Expression> = 6.0.into();
+        assert_eq!(bn, Box::new(Expression::Number(6.0)));
+        let f: f64= (&Expression::Number(6.0)).into();
+        assert_eq!(f, 6.0);
     }
 
     #[test]

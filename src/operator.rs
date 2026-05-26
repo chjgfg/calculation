@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use crate::{expression::Expression, token::Token};
 
 /// 左结合
@@ -5,7 +7,7 @@ const ASSOC_LEFT: u8 = 1;
 /// 右结合
 const ASSOC_RIGHT: u8 = 0;
 
-pub trait Operator: Sized {
+pub trait Operator: Sized + Debug{
     /// 创建Token
     fn from(token: &Token) -> Option<Self>;
     /// 返回结合性
@@ -15,6 +17,7 @@ pub trait Operator: Sized {
 }
 
 /// 前缀表达式
+#[derive(Debug)]
 pub enum PrefixOperator {
     /// 负号
     Minus,
@@ -56,6 +59,7 @@ impl Operator for PrefixOperator {
 }
 
 /// 中缀表达式
+#[derive(Debug)]
 pub enum InfixOperator {
     /// 加号
     Add,
@@ -132,6 +136,7 @@ impl Operator for InfixOperator {
 }
 
 /// 后缀表达式
+#[derive(Debug)]
 pub enum PostfixOperator {
     Factorial,
 }

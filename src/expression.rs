@@ -1,4 +1,4 @@
-use std::f64;
+use std::{f64, fmt::Display};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Constant {
@@ -10,6 +10,18 @@ pub enum Constant {
     NaN,
     /// π
     Pi,
+}
+
+// 先给 Constant 实现 Display --------------------------
+impl Display for Constant {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Constant::E => write!(f, "e"),
+            Constant::Pi => write!(f, "π"),
+            Constant::Infinity => write!(f, "∞"),
+            Constant::NaN => write!(f, "NaN"),
+        }
+    }
 }
 
 impl From<&Constant> for f64 {
@@ -100,7 +112,7 @@ pub enum Expression {
 
 impl Expression {
     pub fn evaluate(&self) -> f64 {
-        match self {
+        let evaluate = match self {
             Expression::Constant(constant) => constant.into(),
             Expression::Number(number) => *number,
             Expression::Add { lhs, rhs } => lhs.evaluate() + rhs.evaluate(),
@@ -134,7 +146,9 @@ impl Expression {
                 (scale * n).round() / scale
             }
             Expression::SquareRoot(expression) => expression.evaluate().sqrt(),
-        }
+        };
+        println!("evaluate:{}", evaluate);
+        evaluate
     }
 }
 
@@ -159,6 +173,60 @@ impl From<f64> for Box<Expression> {
 impl From<&Expression> for f64 {
     fn from(expr: &Expression) -> Self {
         expr.evaluate()
+    }
+}
+
+// 再给 Expression 实现 Display --------------------------
+impl Display for Expression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            // 数字
+            Expression::Number(n) => write!(f, "{}", n),
+
+            // 常量
+            Expression::Constant(c) => write!(f, "{}", c),
+
+            // 加法
+            Expression::Add { lhs, rhs } => write!(f, "({} + {})", lhs, rhs),
+
+            // 减法
+            Expression::Subtract { lhs, rhs } => write!(f, "({} - {})", lhs, rhs),
+
+            // 乘法
+            Expression::Multiply { lhs, rhs } => write!(f, "({} * {})", lhs, rhs),
+
+            // 除法
+            Expression::Divide { lhs, rhs } => write!(f, "({} / {})", lhs, rhs),
+
+            // 取模
+            Expression::Modulo { lhs, rhs } => write!(f, "({} % {})", lhs, rhs),
+
+            // 取反
+            Expression::Negate(expr) => write!(f, "-{}", expr),
+
+            // 幂运算
+            Expression::Exponentiate { lhs, rhs } => write!(f, "({} ^ {})", lhs, rhs),
+
+            // 阶乘
+            Expression::Factorial(expr) => write!(f, "{}!", expr),
+
+            // 开方
+            Expression::SquareRoot(expr) => write!(f, "√{}", expr),
+
+            // 三角函数
+            Expression::Sine(expr) => write!(f, "sin({})", expr),
+            Expression::Cosine(expr) => write!(f, "cos({})", expr),
+            Expression::Tangent(expr) => write!(f, "tan({})", expr),
+
+            // 角度/弧度
+            Expression::Degrees(expr) => write!(f, "degrees({})", expr),
+            Expression::Radians(expr) => write!(f, "radians({})", expr),
+
+            // 四舍五入
+            Expression::Round { value, decimals } => {
+                write!(f, "round({}, {})", value, decimals)
+            }
+        }
     }
 }
 

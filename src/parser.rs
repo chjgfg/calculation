@@ -43,6 +43,7 @@ impl<'a> Parser<'a> {
             .unwrap_or(None)
             .and_then(|token| T::from(&token))
             .filter(|predicate| predicate.precedence() >= min_prec)?;
+        println!("operator:{:?}", operator);
         self.next().ok();
         Some(operator)
     }
@@ -101,6 +102,7 @@ impl<'a> Parser<'a> {
             _ => return Err(Error::Parse(format!("Unknown function {}", name))),
         };
         if args.is_empty() {
+            println!("fun:{:?}", fun);
             Ok(fun)
         } else {
             Err(Error::Parse(format!("Unexpected argument for {}()", name)))
@@ -113,28 +115,32 @@ impl<'a> Parser<'a> {
 }
 
 impl<'a> Parser<'a> {
+    /// 把Token转换成Expression
     fn parse_expression(&mut self, min_prec: u8) -> Result<Expression> {
         let mut lhs = if let Some(prefix) = self.next_if_operator::<PrefixOperator>(min_prec) {
             prefix.build(self.parse_expression(prefix.precedence() + prefix.associativity())?)
         } else {
             self.parse_atom()?
         };
+        println!("lhs prefix:{}", lhs);
         while let Some(postfix) = self.next_if_operator::<PostfixOperator>(min_prec) {
             lhs = postfix.build(lhs)
         }
+        println!("lhs postfix:{}", lhs);
         while let Some(infix) = self.next_if_operator::<InfixOperator>(min_prec) {
             lhs = infix.build(
                 lhs,
                 self.parse_expression(infix.precedence() + infix.associativity())?,
             )
         }
+        println!("lhs infix:{}", lhs);
         Ok(lhs)
     }
 
     fn parse_atom(&mut self) -> Result<Expression> {
         match self.next()? {
             Token::Ident(name) => {
-                // println!("name:{}", name);
+                println!("name:{}", name);
                 if self.next_if(|t| *t == Token::OpenParen).is_some() {
                     let mut args = Vec::new();
                     while self.next_if(|t| *t == Token::CloseParen).is_none() {
@@ -143,6 +149,7 @@ impl<'a> Parser<'a> {
                         }
                         args.push(self.parse_expression(0)?)
                     }
+                    println!("args:{:?}", args);
                     self.build_function(name, args)
                 } else {
                     self.build_constant(name)

@@ -1,6 +1,6 @@
-mod error;
+pub mod error;
 mod expression;
 mod lexer;
 mod operator;
-mod parser;
+pub mod parser;
 mod token;

@@ -3,9 +3,11 @@ use std::{
     io, num,
 };
 
+use rustyline::error::ReadlineError;
+
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum Error {
     IO(String),
     Parse(String),
@@ -34,5 +36,11 @@ impl From<io::Error> for Error {
 impl From<num::ParseFloatError> for Error {
     fn from(value: num::ParseFloatError) -> Self {
         Error::Parse(value.to_string())
+    }
+}
+
+impl From<ReadlineError> for Error {
+    fn from(err: ReadlineError) -> Self {
+        Error::IO(err.to_string())
     }
 }

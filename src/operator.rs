@@ -15,7 +15,7 @@ pub trait Operator: Sized {
 }
 
 /// 前缀表达式
-enum PrefixOperator {
+pub enum PrefixOperator {
     /// 负号
     Minus,
     /// 前缀的加号
@@ -25,7 +25,7 @@ enum PrefixOperator {
 }
 
 impl PrefixOperator {
-    fn build(&self, operand: Expression) -> Expression {
+    pub fn build(&self, operand: Expression) -> Expression {
         match self {
             PrefixOperator::Minus => Expression::Negate(operand.into()),
             PrefixOperator::Plus => operand,

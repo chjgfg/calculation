@@ -2,6 +2,7 @@
 name = "calculation"
 version = "0.1.0"
 edition = "2024"
+description = "A simple mathematical expression calculator written in Rust, supporting arithmetic operations, functions, and interactive REPL."
 license = "MIT"
 repository = "https://github.com/chjgfg/calculation"
 

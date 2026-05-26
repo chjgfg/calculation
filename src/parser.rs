@@ -68,7 +68,7 @@ impl<'a> Parser<'a> {
 
 impl<'a> Parser<'a> {
     fn build_constant(&self, name: String) -> Result<Expression> {
-        println!("name:{}", name);
+        // println!("name:{}", name);
         match name.to_lowercase().as_str() {
             "e" => Ok(Constant::E.into()),
             "inf" => Ok(Constant::Infinity.into()),
@@ -134,7 +134,7 @@ impl<'a> Parser<'a> {
     fn parse_atom(&mut self) -> Result<Expression> {
         match self.next()? {
             Token::Ident(name) => {
-                println!("name:{}", name);
+                // println!("name:{}", name);
                 if self.next_if(|t| *t == Token::OpenParen).is_some() {
                     let mut args = Vec::new();
                     while self.next_if(|t| *t == Token::CloseParen).is_none() {

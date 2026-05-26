@@ -60,10 +60,11 @@ impl<'a> Lexer<'a> {
     fn scan_ident(&mut self) -> Option<Token> {
         // 必须以字母开头，后面可以跟字母 / 下划线
         let mut name = self.next_if(|c| c.is_alphabetic())?.to_string();
+        // 2. 后面可以跟 字母 / 数字 / 下划线
         while let Some(c) = self.next_if(|c| c.is_alphanumeric() || c == '_') {
             name.push(c);
         }
-        println!("scan_ident:{}", name);
+        // println!("scan_ident:{}", name);
         Some(Token::Ident(name))
     }
 
@@ -140,6 +141,16 @@ mod tests {
         println!("lexer: {:?}", lexer);
         while let Some(next) = lexer.next() {
             println!("next: {:?}", next);
+        }
+
+        println!("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+        let vec = vec!["2 + 7 % 3", "sqrt(16)", "3.14 * 2.1", "degrees(4*pi)", "5%3"];
+        for v in vec {
+            let mut lexer = Lexer::new(v).peekable();
+            println!("lexer: {:?}", lexer);
+            let peek = lexer.peek();
+            println!("peek: {:?}", peek);
+            println!("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
         }
     }
 }

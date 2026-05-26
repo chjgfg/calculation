@@ -27,6 +27,7 @@ impl Cli {
             _ => {
                 if !input.is_empty() {
                     let expr = Parser::new(input).parse()?;
+                    println!("expr:{:?}", expr);
                     if self.debug {
                         println!("{:#?}", expr);
                     }
@@ -60,6 +61,7 @@ impl Cli {
         self.debug = opts.is_present("debug");
 
         while let Some(input) = self.prompt()? {
+            println!("input:{}", input);
             match self.evaluate(&input) {
                 Ok(Some(result)) => println!("{}", result),
                 Err(err) => println!("Error: {}", err),
@@ -73,4 +75,3 @@ impl Cli {
 fn main() -> Result<()> {
     Cli::new().run()
 }
-

@@ -1,7 +1,7 @@
 use std::{iter::Peekable, str::Chars};
 
-use crate::token::Token;
 use crate::error::{Error, Result};
+use crate::token::Token;
 
 #[derive(Debug)]
 pub struct Lexer<'a> {
@@ -46,7 +46,6 @@ impl<'a> Lexer<'a> {
     }
 }
 
-
 impl<'a> Lexer<'a> {
     /// 扫描
     fn scan(&mut self) -> Option<Token> {
@@ -61,9 +60,10 @@ impl<'a> Lexer<'a> {
     fn scan_ident(&mut self) -> Option<Token> {
         // 必须以字母开头，后面可以跟字母 / 下划线
         let mut name = self.next_if(|c| c.is_alphabetic())?.to_string();
-        while let Some(c) = self.next_if(|c| c.is_alphabetic() || c == '_') {
+        while let Some(c) = self.next_if(|c| c.is_alphanumeric() || c == '_') {
             name.push(c);
         }
+        println!("scan_ident:{}", name);
         Some(Token::Ident(name))
     }
 
@@ -117,15 +117,16 @@ impl<'a> Lexer<'a> {
 
 impl<'a> Iterator for Lexer<'a> {
     type Item = Result<Token>;
-    
+
     fn next(&mut self) -> Option<Self::Item> {
-        self.consume_whitespace();
+        // self.consume_whitespace();
         self.scan().map(Ok).or_else(|| {
             // 要判断是从哪里开始报的错
-            self.iter.peek().map(|c| Err(Error::Parse(format!("Unexpected character {}", c))))
+            self.iter
+                .peek()
+                .map(|c| Err(Error::Parse(format!("Unexpected character {}", c))))
         })
     }
-    
 }
 
 #[cfg(test)]

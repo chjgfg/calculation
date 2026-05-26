@@ -5,7 +5,7 @@ use crate::{
     expression::{Constant, Expression},
     lexer::Lexer,
     operator::{InfixOperator, Operator, PostfixOperator, PrefixOperator},
-    token::Token,
+    token::{self, Token},
 };
 
 pub struct Parser<'a> {
@@ -42,7 +42,7 @@ impl<'a> Parser<'a> {
             .peek()
             .unwrap_or(None)
             .and_then(|token| T::from(&token))
-            .filter(|predicate| predicate.associativity() >= min_prec)?;
+            .filter(|predicate| predicate.precedence() >= min_prec)?;
         self.next().ok();
         Some(operator)
     }
@@ -53,7 +53,10 @@ impl<'a> Parser<'a> {
             if token == t {
                 return Ok(Some(token));
             } else {
-                return Err(Error::Parse(format!("Expected token {}, found {}", t, token)));
+                return Err(Error::Parse(format!(
+                    "Expected token {}, found {}",
+                    t, token
+                )));
             }
         } else if let Some(token) = self.peek()? {
             return Err(Error::Parse(format!("Unexpected token {}", token)));
@@ -65,6 +68,7 @@ impl<'a> Parser<'a> {
 
 impl<'a> Parser<'a> {
     fn build_constant(&self, name: String) -> Result<Expression> {
+        println!("name:{}", name);
         match name.to_lowercase().as_str() {
             "e" => Ok(Constant::E.into()),
             "inf" => Ok(Constant::Infinity.into()),
@@ -130,6 +134,7 @@ impl<'a> Parser<'a> {
     fn parse_atom(&mut self) -> Result<Expression> {
         match self.next()? {
             Token::Ident(name) => {
+                println!("name:{}", name);
                 if self.next_if(|t| *t == Token::OpenParen).is_some() {
                     let mut args = Vec::new();
                     while self.next_if(|t| *t == Token::CloseParen).is_none() {
